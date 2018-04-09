@@ -1,0 +1,88 @@
+h4 {
+    margin-top: 0px;
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 12pt;
+    
+}
+
+.separator {
+    margin-top: 00px;
+}
+
+.ui_group {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #909090;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.ui_group_header {
+    color: #000000; 
+    font-weight: bold;
+    font-size: 18px;
+    display: inline-block;
+    margin-right: 30px;
+}
+
+#add_tile {
+    background-color: #9bffc9;
+}
+
+#add_focus {
+    background-color: #fffdc9;
+}
+
+#delete_tiles {
+    background-color: #ffd3d1;
+}
+
+#assign_column_group_id {
+    margin-top: 25px;
+}
+
+.infotable {
+    margin-top: 10px;
+}
+
+.infotable td {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.infotable tr {
+    /* border-top: 1px solid black; */
+}
+
+.headerrow {
+    font-weight: bold;
+    border-bottom: 1px solid black;
+}
+
+
+#label_plot_original label {
+    font-weight: bold;
+    color: #000000;
+}
+
+#label_plot_background_1 label {
+    font-weight: bold;
+    color: #00AA00;
+}
+
+#label_plot_background_2 label {
+    font-weight: bold;
+    color: #3477DB;
+}
+
+#selection_info_header {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-weight: bold;
+    font-size: 20pt;
+}
+
+#selection_info {
+    font-size: 15pt;
+}

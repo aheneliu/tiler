@@ -1,0 +1,7 @@
+require(tiler)
+require(ggplot2)
+require(shiny)
+require(shinyjs)
+require(rhandsontable)
+require(DT)
+shinyjs::useShinyjs()

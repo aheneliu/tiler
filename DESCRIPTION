@@ -1,0 +1,16 @@
+Package: tiler
+Title: Constrained randomisation of matrices using tiles
+Version: 0.1.0
+Description: This package provides functions for constrained randomisation of matrices using tiles. The package also includes an interactive software for data exploration.
+Authors@R: c(person("Andreas", "Henelius", role = c("aut", "cre"), email = "andreas.henelius@aalto.fi"),
+	     person("Kai", "Puolamäki", role = c("aut"), email = "kai.puolamaki@aalto.fi"),
+	     person("Aalto University", role = c("cph")))
+Depends: R (>= 3.2.4), ggplot2, shiny, shinyjs, rhandsontable, DT
+Encoding: UTF-8
+License: MIT + file LICENSE
+Suggests: testthat
+RoxygenNote: 6.0.1
+NeedsCompilation: no
+Packaged: 2018-02-16 08:07:57 UTC; anhe
+Author: Andreas Henelius [aut, cre], Kai Puolamäki [aut], Aalto University [cph]
+Maintainer: Andreas Henelius <andreas.henelius@aalto.fi>

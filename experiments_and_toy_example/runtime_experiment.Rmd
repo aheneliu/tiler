@@ -1,0 +1,100 @@
+## Copyright 2018 Kai Puolamaki <kai.puolamaki@aalto.fi>
+## Copyright 2018 Aalto University, Espoo, Finland
+##
+## Permission is hereby granted, free of charge, to any person obtaining
+## a copy of this software and associated documentation files (the
+## "Software"), to deal in the Software without restriction, including
+## without limitation the rights to use, copy, modify, merge, publish,
+## distribute, sublicense, and/or sell copies of the Software, and to
+## permit persons to whom the Software is furnished to do so, subject to
+## the following conditions:
+##
+## The above copyright notice and this permission notice shall be
+## included in all copies or substantial portions of the Software.
+##
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+## EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+## MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+## NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+## LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+## OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+## WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+---
+title: "Runtime experiment"
+output: html_notebook
+---
+
+
+```{r}
+set.seed(42)
+
+source("tiling.R")
+
+testf <- function(n=101,m=97,k=7,iter=100) {
+  cat(sprintf("testf: n = %d m = %d k = %d iter = %d\n",n,m,k,iter))
+  data1 <- matrix(rep(1:n,m),n,m)
+  data2 <- matrix(rep(1:m,each=n),n,m)
+  hits <- 0
+  for(i in 1:iter) {
+    junk <- tiling(n,m)
+    rr <- sample.int(n,size=2)
+    data3 <- matrix(0,n,m)
+    data3[rr[1],] <- 1
+    data3[rr[2],] <- 2
+    tiles <- lapply(1:k,function(i) list(R=sample.int(n,size=sample.int(n)),
+                                         C=sample.int(m,size=sample.int(m))))
+    tiles <- lapply(tiles,
+                    function(x) list(R=if(length(intersect(x$R,rr))>0) union(x$R,rr) else x$R,
+                                     C=x$C))
+    for(tile in tiles) {
+      junk$addtile(tile$R,tile$C)
+    }
+    pdata <- junk$permutedata(data1)
+    for(tile in tiles) {
+      slice <- pdata[tile$R,tile$C,drop=FALSE]
+      if(!setequal(tile$R,slice[,1]) || any(apply(slice,1,function(x) any(x!=x[1])))) stop("error: permutation violates a tile constraint.")
+    }
+    pdata <- junk$permutedata(data2)
+    if(any(apply(pdata,2,function(x) any(x!=x[1])))) stop("error: permutation doesn't stay within column.")
+    pdata <- junk$permutedata(data3)
+    if(pdata[rr[1],1]!=1 || pdata[rr[2],1]!=2) hits <- hits+1
+  }
+  if(hits==0) stop("error: suspiciusly few swaps.")
+  cat("success\n")
+}
+
+runtime <- function(n=101,m=97,k=7) {
+  tiles <- lapply(1:k,function(i) list(R=sample.int(n,size=floor(n/10)),
+                                       C=sample.int(m,size=floor(m/10))))
+  tinit <- system.time( junk <- tiling(n,m) )["elapsed"]
+  tmaxadd <- -Inf
+  for(tile in tiles) {
+    R <- tile$R
+    C <- tile$C
+    tmaxadd <- max(tmaxadd,system.time( junk$addtile(R,C) )["elapsed"])
+  }
+  data <- matrix(1:(n*m),nrow=n,ncol=m)
+  tpermute <- system.time( pdata <- junk$permutedata(data) )["elapsed"]
+  list(tinit=tinit,tmaxadd=tmaxadd,tpermute=tpermute)
+}
+```
+
+
+```{r}
+version
+
+testf()
+
+cat("$n$ & $m$ & $k$ & $t_{init}$ & $t_{permute}$ & $t_{max,add}$ \\\\\n")
+for(n in c(5000,10000)) {
+  for(m in c(50,100)) {
+    for(k in c(25,50,100)) {
+      a <- runtime(n,m,k)
+      cat(sprintf("$%5d$ & $%3d$ & $%3d$ & $%.2f$ & $%.2f$ & $%.2f$ \\\\\n",n,m,k,a$tinit,a$tpermute,a$tmaxadd))
+    }
+  }
+}
+
+```

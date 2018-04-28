@@ -8,16 +8,21 @@ ui <- navbarPage("Tiler", theme = "bootstrap.css",
                                   shinyjs::useShinyjs(), ## use shinyjs
 
                                   ## dataset
+                                  HTML("<div class='ui_group_header_block'>Load dataset</div>"),
                                   div(style="display: inline-block;vertical-align:top; width: 300px;",
-                                      selectInput('dataset_name', 'Dataset', choices = NULL, selected = NULL)
+                                      selectInput('dataset_name_internal', 'Internal dataset', choices = NULL, selected = NULL)
                                       ),
                                   
-                                  div(style="display: inline-block;vertical-align:top; width: 150px;",
-                                      HTML("<div style='min-height: 25px'></div>"),
-                                      actionButton("load_data", "Load dataset")
-                                      ),
+                                  HTML("<div style='min-height: 10px'></div>"),
+                                  fileInput("dataset_name_external", "External Dataset", accept = c(".Rds", ".rds", ".RDS")),
 
-                                  h3("Variables in the data"),
+                                  HTML("<div class='separator'></div>"),
+                                  
+                                  actionButton("load_data", "Load dataset"),
+                                  actionButton("clear_load", "Clear dataset selection"),
+
+                                  HTML("<div style='min-height: 50px'></div>"),
+                                  HTML("<div class='ui_group_header_block'>Variables in the data</div>"),
                                   htmlOutput("data_names")
                               ),
 

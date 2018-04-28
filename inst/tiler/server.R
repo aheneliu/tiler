@@ -21,6 +21,7 @@ server <- function(input, output, session) {
     selected_points_focus_tiles  <- c()
     selected_points_classes      <- c()
 
+    use_external_data <- FALSE
 
     ## The dataset
     dataset   <- NULL ## original
@@ -205,7 +206,7 @@ server <- function(input, output, session) {
 
 
     read_dataset <- function(fname) {
-        readRDS(file.path("data", paste0(fname, ".rds")))
+        readRDS(fname)
     }
 
     
@@ -256,14 +257,28 @@ server <- function(input, output, session) {
     ## --------------------------------------------------
     ## Update list of selectable datasets
     ## --------------------------------------------------
+    updateSelectInput(session, "dataset_name_internal", label = NULL, choices = list_datasets(), selected = "")
 
-    updateSelectInput(session, "dataset_name", label = "Dataset", choices = list_datasets(), selected = "")
 
+    ## --------------------------------------------------
+    ## Clear dataset selection
+    ## --------------------------------------------------
+    observeEvent(input$dataset_name_external, {
+        use_external_data <<- TRUE
+    })
+    
+    observeEvent(input$clear_load, {
+        updateSelectInput(session, "dataset_name_internal", label = NULL, choices = list_datasets(), selected = "")
+        shinyjs::reset("dataset_name_external")
+        use_external_data <<- FALSE
+    })
+    
     ## --------------------------------------------------
     ## Load data
     ## --------------------------------------------------
     observeEvent(input$load_data, {
-        if (input$dataset_name == "") {
+
+        if ((input$dataset_name_internal == "") & is.null(input$dataset_name_external)) {
             showModal(modalDialog(
                 title = "Error loading dataset",
                 "No dataset selected.",
@@ -272,7 +287,17 @@ server <- function(input, output, session) {
                 fade = FALSE
             ))
         } else {
+            ## Check if the dataset is internal or external.
+            ## If both internal and external datasets are marked, use the external dataset.
+            
+            if (input$dataset_name_internal != "") {
+                dataset_name <- file.path("data", paste0(input$dataset_name_internal, ".rds"))
+            }
 
+            if (use_external_data & (! is.null(input$dataset_name_external))) {
+                dataset_name <- input$dataset_name_external$datapath
+            }
+            
             ## Reset data and tilings
             dataset   <<- NULL ## original
             dataset_1 <<- NULL ## randomised 1
@@ -288,7 +313,7 @@ server <- function(input, output, session) {
             yvar <<- NULL
 
             ## Read the dataset
-            dataset <<- read_dataset(input$dataset_name)
+            dataset <<- read_dataset(dataset_name)
 
             n_numeric_cols <<- sum(sapply(dataset, is.numeric))
 

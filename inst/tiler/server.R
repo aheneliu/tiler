@@ -571,7 +571,7 @@ server <- function(input, output, session) {
     ## --------------------------------------------------
     observeEvent(input$selected_points, {
         selection <<- c(selection, list(input$selected_points))
-        selected_points_brush <<- unique(unlist(lapply(selection, function(p) which(brushedPoints(dataset, p, allRows = TRUE)$selected))))
+        selected_points_brush <<- unique(unlist(lapply(selection, function(p) which(brushedPoints(dataset, p, xvar = xvar, yvar = yvar, allRows = TRUE)$selected))))
     })
 
     observeEvent(input$resetSelection, {
